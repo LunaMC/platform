@@ -31,4 +31,4 @@
 #
 #
 
-io.lunamc.platform.internal.plugin.annotation.processor.LunaAnnotationProcessor
+io.lunamc.platform.internal.plugin.annotation.processor.LunaPluginAnnotationProcessor

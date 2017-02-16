@@ -49,8 +49,8 @@ import java.util.stream.Collectors;
 
 @SupportedAnnotationTypes({ "io.lunamc.platform.plugin.annotation.LunaPlugin" })
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedOptions({ LunaAnnotationProcessor.OPTION_OUTPUT_FILE, LunaAnnotationProcessor.OPTION_SKIP_XML_VALIDATION })
-public class LunaAnnotationProcessor extends AbstractProcessor {
+@SupportedOptions({ LunaPluginAnnotationProcessor.OPTION_OUTPUT_FILE, LunaPluginAnnotationProcessor.OPTION_SKIP_XML_VALIDATION })
+public class LunaPluginAnnotationProcessor extends AbstractProcessor {
 
     public static final String OPTION_OUTPUT_FILE = "io.lunamc.platform.preprocessor.providedPluginsOutputFile";
     public static final String OPTION_SKIP_XML_VALIDATION = "io.lunamc.platform.preprocessor.skipXmlValidation";
