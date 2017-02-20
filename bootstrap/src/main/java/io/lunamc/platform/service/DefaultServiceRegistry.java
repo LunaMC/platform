@@ -21,6 +21,10 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -51,6 +55,30 @@ public class DefaultServiceRegistry implements ServiceRegistry {
             securityManager.checkPermission(ServiceRegistryPermission.PERMISSION_ACCESS);
 
         return Collections.unmodifiableCollection(serviceRegistrations.values());
+    }
+
+    @Override
+    public <T> T instantiate(Constructor<T> constructor) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        SecurityManager securityManager = System.getSecurityManager();
+        if (securityManager != null)
+            securityManager.checkPermission(ServiceRegistryPermission.PERMISSION_ACCESS);
+
+        Type[] parameterTypes = constructor.getGenericParameterTypes();
+        ServiceRegistration<?>[] serviceRegistrations = new ServiceRegistration[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++) {
+            Type parameterType = parameterTypes[i];
+            if (!(parameterType instanceof ParameterizedType))
+                throw new IllegalArgumentException("Invalid parameter #" + i + ": " + parameterType);
+            Type[] typeArguments = ((ParameterizedType) parameterType).getActualTypeArguments();
+            if (typeArguments.length < 1)
+                throw new IllegalArgumentException("Invalid parameter #" + i + ": " + parameterType);
+            Type typeArgument = typeArguments[0];
+            if (!(typeArgument instanceof Class))
+                throw new IllegalArgumentException("Invalid parameter #" + i + ": " + parameterType);
+            serviceRegistrations[i] = getService((Class<?>) typeArgument);
+        }
+
+        return constructor.newInstance((Object[]) serviceRegistrations);
     }
 
     @Override

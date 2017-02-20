@@ -16,6 +16,8 @@
 
 package io.lunamc.platform.service;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
 public interface ServiceRegistry {
@@ -29,6 +31,8 @@ public interface ServiceRegistry {
         serviceRegistration.setInstance(serviceInstance);
         return serviceRegistration;
     }
+
+    <T> T instantiate(Constructor<T> constructor) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;
 
     void start();
 
