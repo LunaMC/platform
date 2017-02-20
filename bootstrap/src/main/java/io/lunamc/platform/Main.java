@@ -25,6 +25,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.security.Policy;
 import java.util.Properties;
 
@@ -37,6 +39,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        debugRuntime();
         loadSystemProperties();
         setupSecurityManager();
 
@@ -44,6 +47,21 @@ public class Main {
         Runtime.getRuntime().addShutdownHook(new Thread(instance::safeStop, "shutdown-thread"));
         instance.start();
         instance.waitForStop();
+    }
+
+    private static void debugRuntime() {
+        if (LOGGER.isDebugEnabled()) {
+            RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
+            if (bean != null) {
+                String message = "Runtime debugging:" + System.lineSeparator() +
+                        "\tJVM Name: " + bean.getName() + System.lineSeparator() +
+                        "\tJVM Specification: " + bean.getSpecName() + " (" + bean.getSpecVersion() + ") by " + bean.getSpecVendor() + System.lineSeparator() +
+                        "\tJVM Implementation: " + bean.getVmName() + " (" + bean.getVmVersion() + ") by " + bean.getVmVendor();
+                LOGGER.debug(message);
+            } else {
+                LOGGER.debug("Runtime cannot be debugged since RuntimeMXBean is not available");
+            }
+        }
     }
 
     private static void loadSystemProperties() {
