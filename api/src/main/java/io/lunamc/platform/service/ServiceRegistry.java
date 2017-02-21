@@ -16,6 +16,8 @@
 
 package io.lunamc.platform.service;
 
+import io.lunamc.platform.utils.ServiceRegistryUtils;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
@@ -30,6 +32,13 @@ public interface ServiceRegistry {
         ServiceRegistration<T> serviceRegistration = getService(serviceClass);
         serviceRegistration.setInstance(serviceInstance);
         return serviceRegistration;
+    }
+
+    default <T> T instantiate(Class<T> aClass) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        Constructor<T> constructor = ServiceRegistryUtils.findAppropriateInstantiableConstructor(aClass);
+        if (constructor == null)
+            throw new UnsupportedOperationException("No appropriate constructor found for " + aClass.getName() + '.');
+        return instantiate(constructor);
     }
 
     <T> T instantiate(Constructor<T> constructor) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException;

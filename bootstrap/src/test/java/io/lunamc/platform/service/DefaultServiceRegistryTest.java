@@ -16,6 +16,7 @@
 
 package io.lunamc.platform.service;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -24,17 +25,33 @@ import java.util.Objects;
 public class DefaultServiceRegistryTest {
 
     @Test
-    public void testInstantiate() throws Throwable {
+    public void testInstantiateConstructor() throws Throwable {
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         DemoClass demoClass = serviceRegistry.instantiate(DemoClass.class.getConstructor(ServiceRegistration.class));
+        Assert.assertNotNull(demoClass);
 
         DemoService demoService = Mockito.mock(DemoService.class);
         serviceRegistry.setService(DemoService.class, demoService);
         serviceRegistry.setService(AnotherDemoService.class, Mockito.mock(AnotherDemoService.class));
 
-        Mockito.verify(demoService, Mockito.never());
         demoClass.test();
-        Mockito.verify(demoService, Mockito.calls(1));
+        Mockito.verify(demoService, Mockito.times(1)).test();
+        Mockito.validateMockitoUsage();
+    }
+
+    @Test
+    public void testInstantiateClass() throws Throwable {
+        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
+        DemoClass demoClass = serviceRegistry.instantiate(DemoClass.class);
+        Assert.assertNotNull(demoClass);
+
+        DemoService demoService = Mockito.mock(DemoService.class);
+        serviceRegistry.setService(DemoService.class, demoService);
+        serviceRegistry.setService(AnotherDemoService.class, Mockito.mock(AnotherDemoService.class));
+
+        demoClass.test();
+        Mockito.verify(demoService, Mockito.times(1)).test();
+        Mockito.validateMockitoUsage();
     }
 
     private interface DemoService {
